@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		82BAE2E430120A9700C186EC /* Travel Schedule.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Travel Schedule.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		82BAE2E430120A9700C186EC /* TravelSchedule.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TravelSchedule.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		82BAE2E630120A9700C186EC /* Travel Schedule */ = {
+		82BAE2E630120A9700C186EC /* TravelSchedule */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Travel Schedule";
+			path = TravelSchedule;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		82BAE2DB30120A9700C186EC = {
 			isa = PBXGroup;
 			children = (
-				82BAE2E630120A9700C186EC /* Travel Schedule */,
+				82BAE2E630120A9700C186EC /* TravelSchedule */,
 				82BAE2E530120A9700C186EC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		82BAE2E530120A9700C186EC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				82BAE2E430120A9700C186EC /* Travel Schedule.app */,
+				82BAE2E430120A9700C186EC /* TravelSchedule.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		82BAE2E330120A9700C186EC /* Travel Schedule */ = {
+		82BAE2E330120A9700C186EC /* TravelSchedule */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 82BAE2EF30120A9900C186EC /* Build configuration list for PBXNativeTarget "Travel Schedule" */;
+			buildConfigurationList = 82BAE2EF30120A9900C186EC /* Build configuration list for PBXNativeTarget "TravelSchedule" */;
 			buildPhases = (
 				82BAE2E030120A9700C186EC /* Sources */,
 				82BAE2E130120A9700C186EC /* Frameworks */,
@@ -61,13 +61,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				82BAE2E630120A9700C186EC /* Travel Schedule */,
+				82BAE2E630120A9700C186EC /* TravelSchedule */,
 			);
-			name = "Travel Schedule";
+			name = TravelSchedule;
 			packageProductDependencies = (
 			);
 			productName = "Travel Schedule";
-			productReference = 82BAE2E430120A9700C186EC /* Travel Schedule.app */;
+			productReference = 82BAE2E430120A9700C186EC /* TravelSchedule.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 82BAE2DF30120A9700C186EC /* Build configuration list for PBXProject "Travel Schedule" */;
+			buildConfigurationList = 82BAE2DF30120A9700C186EC /* Build configuration list for PBXProject "TravelSchedule" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				82BAE2E330120A9700C186EC /* Travel Schedule */,
+				82BAE2E330120A9700C186EC /* TravelSchedule */,
 			);
 		};
 /* End PBXProject section */
@@ -317,7 +317,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		82BAE2DF30120A9700C186EC /* Build configuration list for PBXProject "Travel Schedule" */ = {
+		82BAE2DF30120A9700C186EC /* Build configuration list for PBXProject "TravelSchedule" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				82BAE2ED30120A9900C186EC /* Debug */,
@@ -326,7 +326,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		82BAE2EF30120A9900C186EC /* Build configuration list for PBXNativeTarget "Travel Schedule" */ = {
+		82BAE2EF30120A9900C186EC /* Build configuration list for PBXNativeTarget "TravelSchedule" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				82BAE2F030120A9900C186EC /* Debug */,

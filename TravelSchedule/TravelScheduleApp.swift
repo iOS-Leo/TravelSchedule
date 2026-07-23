@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct Travel_ScheduleApp: App {
+struct TravelScheduleApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
