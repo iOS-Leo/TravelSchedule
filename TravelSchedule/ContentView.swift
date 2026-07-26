@@ -31,7 +31,7 @@ struct ContentView: View {
 func testAllServices() {
     Task {
         let apiKey = "da376864-7e73-417e-946b-aee48bb51b36"
-        let baseURL = (try? Servers.Server1.url()) ?? URL(string: "https://api.rasp.yandex.net")!
+        guard let baseURL = (try? Servers.Server1.url()) ?? URL(string: "https://api.rasp.yandex.net") else {return}
 
         let client = Client(
             serverURL: baseURL,
