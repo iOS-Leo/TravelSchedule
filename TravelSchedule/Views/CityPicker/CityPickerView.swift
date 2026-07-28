@@ -25,7 +25,7 @@ struct CityPickerView: View {
                             .foregroundColor(.primary)
                         Spacer()
                     }
-                    .padding(.top, 176) 
+                    .padding(.top, 176)
                 } else {
                     List(viewModel.filteredCities) { city in
                         ZStack {
