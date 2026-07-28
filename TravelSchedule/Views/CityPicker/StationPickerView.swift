@@ -22,12 +22,12 @@ struct StationPickerView: View {
             
             if stations.isEmpty {
                 VStack {
-                    Spacer()
                     Text(Constants.Strings.stationNotFound)
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.system(size: 24, weight: .bold))
                         .foregroundColor(.primary)
                     Spacer()
                 }
+                .padding(.top, 176) 
             } else {
                 List {
                     ForEach(stations, id: \.id) { station in

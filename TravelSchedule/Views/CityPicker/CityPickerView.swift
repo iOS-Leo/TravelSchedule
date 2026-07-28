@@ -20,12 +20,12 @@ struct CityPickerView: View {
                 // MARK: - Список городов / Пустое состояние
                 if viewModel.filteredCities.isEmpty {
                     VStack {
-                        Spacer()
                         Text(Constants.Strings.cityNotFound)
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.system(size: 24, weight: .bold))
                             .foregroundColor(.primary)
                         Spacer()
                     }
+                    .padding(.top, 176) 
                 } else {
                     List(viewModel.filteredCities) { city in
                         ZStack {
@@ -38,7 +38,7 @@ struct CityPickerView: View {
                                 EmptyView()
                             }
                             .opacity(0)
-                             
+                            
                             HStack {
                                 Text(city.name)
                                     .font(.system(size: 17, weight: .regular))
