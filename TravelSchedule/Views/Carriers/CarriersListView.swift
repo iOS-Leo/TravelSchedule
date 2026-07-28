@@ -16,6 +16,11 @@ struct CarriersListView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
+            // MARK: - Фон экрана
+            Constants.Colors.mainBackground
+                .ignoresSafeArea()
+            
+            // MARK: - Контент
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     Text("\(viewModel.departure) → \(viewModel.destination)")
@@ -48,6 +53,7 @@ struct CarriersListView: View {
                 }
             }
             
+            // MARK: - Кнопка "Уточнить время"
             Button {
                 showFilters = true
             } label: {

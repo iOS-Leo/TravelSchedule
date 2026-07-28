@@ -10,8 +10,12 @@ import SwiftUI
 struct SettingsView: View {
     var body: some View {
         NavigationStack {
-            ErrorView(errorType: .serverError)
-                .navigationBarTitleDisplayMode(.inline)
+            ZStack {
+                Constants.Colors.mainBackground
+                    .ignoresSafeArea()
+                ErrorView(errorType: .serverError)
+            }
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

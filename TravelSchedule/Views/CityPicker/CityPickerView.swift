@@ -13,50 +13,57 @@ struct CityPickerView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // MARK: - Поисковая строка
-                SearchBarView(text: $viewModel.searchText)
+            ZStack {
+                // MARK: - Фон экрана
+                Constants.Colors.mainBackground
+                    .ignoresSafeArea()
                 
-                // MARK: - Список городов / Пустое состояние
-                if viewModel.filteredCities.isEmpty {
-                    VStack {
-                        Text(Constants.Strings.cityNotFound)
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundColor(.primary)
-                        Spacer()
-                    }
-                    .padding(.top, 176)
-                } else {
-                    List(viewModel.filteredCities) { city in
-                        ZStack {
-                            NavigationLink {
-                                StationPickerView(
-                                    cityName: city.name,
-                                    viewModel: viewModel
-                                )
-                            } label: {
-                                EmptyView()
-                            }
-                            .opacity(0)
-                            
-                            HStack {
-                                Text(city.name)
-                                    .font(.system(size: 17, weight: .regular))
-                                    .foregroundColor(.primary)
-                                Spacer()
-                                Image(systemName: Constants.Icons.forward)
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundColor(.primary)
-                            }
-                            .frame(height: Constants.Layout.listRowHeight)
-                            .contentShape(Rectangle())
+                // MARK: - Основной контент
+                VStack(spacing: 0) {
+                    // MARK: - Поисковая строка
+                    SearchBarView(text: $viewModel.searchText)
+                    
+                    // MARK: - Список городов / Пустое состояние
+                    if viewModel.filteredCities.isEmpty {
+                        VStack {
+                            Text(Constants.Strings.cityNotFound)
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.primary)
+                            Spacer()
                         }
-                        .listRowInsets(EdgeInsets(top: 0, leading: Constants.Layout.horizontalPadding, bottom: 0, trailing: Constants.Layout.horizontalPadding))
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
+                        .padding(.top, 176)
+                    } else {
+                        List(viewModel.filteredCities) { city in
+                            ZStack {
+                                NavigationLink {
+                                    StationPickerView(
+                                        cityName: city.name,
+                                        viewModel: viewModel
+                                    )
+                                } label: {
+                                    EmptyView()
+                                }
+                                .opacity(0)
+                                
+                                HStack {
+                                    Text(city.name)
+                                        .font(.system(size: 17, weight: .regular))
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Image(systemName: Constants.Icons.forward)
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundColor(.primary)
+                                }
+                                .frame(height: Constants.Layout.listRowHeight)
+                                .contentShape(Rectangle())
+                            }
+                            .listRowInsets(EdgeInsets(top: 0, leading: Constants.Layout.horizontalPadding, bottom: 0, trailing: Constants.Layout.horizontalPadding))
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+                        }
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
                     }
-                    .listStyle(.plain)
-                    .scrollContentBackground(.hidden)
                 }
             }
             .navigationTitle(Constants.Strings.cityPickerTitle)

@@ -20,6 +20,11 @@ struct FilterView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
+                // MARK: - Фон экрана
+                Constants.Colors.mainBackground
+                    .ignoresSafeArea()
+                
+                // MARK: - Прокручиваемый контент
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
                         
@@ -38,7 +43,7 @@ struct FilterView: View {
                                             Spacer()
                                             Image(systemName: viewModel.state.selectedTimes.contains(time) ? Constants.Icons.checkboxSelected : Constants.Icons.checkboxUnselected)
                                                 .font(.system(size: 22))
-                                                .foregroundColor(viewModel.state.selectedTimes.contains(time) ? .black : Color(uiColor: .systemGray3))
+                                                .foregroundColor(viewModel.state.selectedTimes.contains(time) ? .primary : Color(uiColor: .systemGray3))
                                         }
                                         .frame(height: Constants.Layout.listRowHeight)
                                     }
@@ -61,7 +66,7 @@ struct FilterView: View {
                                             Spacer()
                                             Image(systemName: viewModel.state.selectedTransfer == option ? Constants.Icons.radioButtonSelected : Constants.Icons.radioButtonUnselected)
                                                 .font(.system(size: 22))
-                                                .foregroundColor(viewModel.state.selectedTransfer == option ? .black : Color(uiColor: .systemGray3))
+                                                .foregroundColor(viewModel.state.selectedTransfer == option ? .primary : Color(uiColor: .systemGray3))
                                         }
                                         .frame(height: Constants.Layout.listRowHeight)
                                     }
@@ -74,6 +79,7 @@ struct FilterView: View {
                     .padding(.bottom, 100)
                 }
                 
+                // MARK: - Кнопка "Применить"
                 if viewModel.state.isAnyFilterSelected {
                     Button {
                         onApply(viewModel.state)

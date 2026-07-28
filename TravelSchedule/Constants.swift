@@ -75,6 +75,7 @@ enum Constants {
     enum ImageAssets {
         static let noInternet = "noInternet"
         static let serverError = "serverError"
+        static let launchScreen = "launchScreen"
     }
     
     enum FilterStrings {
@@ -85,5 +86,10 @@ enum Constants {
         
         static let transferYes = "Да"
         static let transferNo = "Нет"
+    }
+    
+    enum Colors {
+        static let mainBackgroundName = "mainBackground"
+        static let mainBackground = Color(mainBackgroundName)
     }
 }
