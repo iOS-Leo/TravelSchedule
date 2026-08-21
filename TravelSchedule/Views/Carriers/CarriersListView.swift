@@ -43,6 +43,7 @@ struct CarriersListView: View {
                             ForEach(viewModel.filteredCarriers) { carrier in
                                 NavigationLink(destination: CarrierView(
                                     carrierName: carrier.name,
+                                    logoImageName: carrier.logo,
                                     email: carrier.email,
                                     phone: carrier.phone
                                 )) {
@@ -50,7 +51,7 @@ struct CarriersListView: View {
                                         .resizable()
                                         .scaledToFit()
                                         .frame(maxWidth: .infinity)
-                                        .contentShape(Rectangle()) 
+                                        .contentShape(Rectangle())
                                 }
                             }
                         }

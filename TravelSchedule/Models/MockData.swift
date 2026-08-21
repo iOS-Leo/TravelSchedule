@@ -56,7 +56,7 @@ let mockStations = [
 
 let mockCarriers = [
     Carrier(
-        name: "РЖД",
+        name: "ОАО «РЖД»",
         logo: "rzd",
         hasTransfer: true,
         transferCity: "Кострома",
