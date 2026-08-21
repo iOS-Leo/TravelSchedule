@@ -40,11 +40,18 @@ struct CarriersListView: View {
                         }
                     } else {
                         VStack(spacing: 8) {
-                            ForEach(viewModel.filteredCarriers) { item in
-                                Image(item.imageResource)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(maxWidth: .infinity)
+                            ForEach(viewModel.filteredCarriers) { carrier in
+                                NavigationLink(destination: CarrierView(
+                                    carrierName: carrier.name,
+                                    email: carrier.email,
+                                    phone: carrier.phone
+                                )) {
+                                    Image(carrier.logo)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(maxWidth: .infinity)
+                                        .contentShape(Rectangle()) 
+                                }
                             }
                         }
                         .padding(.horizontal, Constants.Layout.horizontalPadding)
