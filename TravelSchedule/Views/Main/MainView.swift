@@ -10,15 +10,36 @@ import SwiftUI
 struct MainView: View {
     @StateObject private var viewModel = MainViewModel()
     
+    @State private var selectedStory: StoryItem? = nil
+    @State private var viewedStoryIDs: Set<UUID> = []
+    
     var body: some View {
         NavigationStack {
             ZStack {
-                // MARK: - Фон экрана
                 Constants.Colors.mainBackground
                     .ignoresSafeArea()
                 
-                // MARK: - Основной контент
                 VStack(spacing: 0) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHGrid(rows: [GridItem(.fixed(140))], spacing: 12) {
+                            ForEach(mockStories) { story in
+                                let displayStory = StoryItem(
+                                    title: story.title,
+                                    imageName: story.imageName,
+                                    isViewed: viewedStoryIDs.contains(story.id)
+                                )
+                                
+                                StoryCardView(story: displayStory) {
+                                    selectedStory = story
+                                    viewedStoryIDs.insert(story.id)
+                                }
+                            }
+                        }
+                        .padding(.horizontal, Constants.Layout.horizontalPadding)
+                    }
+                    .frame(height: 188)
+                    .padding(.top, 16)
+                    
                     // MARK: - Синий контейнер выбора городов
                     HStack(spacing: 16) {
                         VStack(alignment: .leading, spacing: 0) {
@@ -65,7 +86,7 @@ struct MainView: View {
                     .background(Color.blue)
                     .cornerRadius(24)
                     .padding(.horizontal, Constants.Layout.horizontalPadding)
-                    .padding(.top, 208)
+                    .padding(.top, 16)
                     
                     // MARK: - Кнопка "Найти"
                     if viewModel.canSearch {
@@ -92,6 +113,15 @@ struct MainView: View {
             }
             .sheet(isPresented: $viewModel.showCityPicker) {
                 CityPickerView(viewModel: viewModel)
+            }
+            .fullScreenCover(item: $selectedStory) { story in
+                if let index = mockStories.firstIndex(where: { $0.id == story.id }) {
+                    StoriesViewerView(
+                        stories: mockStories,
+                        startIndex: index,
+                        viewedIDs: $viewedStoryIDs
+                    )
+                }
             }
         }
     }
