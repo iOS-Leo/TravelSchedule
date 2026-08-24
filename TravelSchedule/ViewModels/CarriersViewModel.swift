@@ -8,19 +8,14 @@ final class CarriersViewModel: ObservableObject {
     
     @Published var appliedFilters = FilterState()
     
-    @Published var carriers: [CarrierItem] = [
-        CarrierItem(imageResource: .rzd),
-        CarrierItem(imageResource: .fgk),
-        CarrierItem(imageResource: .ural),
-        CarrierItem(imageResource: .rzd2)
-    ]
+    @Published var carriers: [Carrier] = mockCarriers
     
     init(departure: String, destination: String) {
         self.departure = departure
         self.destination = destination
     }
     
-    var filteredCarriers: [CarrierItem] {
+    var filteredCarriers: [Carrier] {
         guard appliedFilters.isAnyFilterSelected else {
             return carriers
         }
