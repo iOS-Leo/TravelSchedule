@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct StationPickerView: View {
-    let cityName: String
+    let city: CityModel
     @ObservedObject var viewModel: MainViewModel
     @Environment(\.dismiss) private var dismiss
     
@@ -24,7 +24,7 @@ struct StationPickerView: View {
                 SearchBarView(text: $viewModel.searchText)
                 
                 // MARK: - Список станций / Пустое состояние
-                let stations = viewModel.filteredStations(for: cityName)
+                let stations = viewModel.filteredStations(for: city)
                 
                 if stations.isEmpty {
                     VStack {
@@ -38,7 +38,7 @@ struct StationPickerView: View {
                     List {
                         ForEach(stations, id: \.id) { station in
                             Button {
-                                viewModel.selectCity(cityName, station: station.name)
+                                viewModel.selectStation(city: city, station: station)
                             } label: {
                                 HStack {
                                     Text(station.name)

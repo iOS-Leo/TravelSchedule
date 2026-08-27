@@ -23,8 +23,14 @@ struct CityPickerView: View {
                     // MARK: - Поисковая строка
                     SearchBarView(text: $viewModel.searchText)
                     
-                    // MARK: - Список городов / Пустое состояние
-                    if viewModel.filteredCities.isEmpty {
+                    // MARK: - Состояния загрузки / Список городов / Пустое состояние
+                    if viewModel.isLoading {
+                        VStack {
+                            Spacer()
+                            ProgressView("Загрузка станций...")
+                            Spacer()
+                        }
+                    } else if viewModel.filteredCities.isEmpty {
                         VStack {
                             Text(Constants.Strings.cityNotFound)
                                 .font(.system(size: 24, weight: .bold))
@@ -37,7 +43,7 @@ struct CityPickerView: View {
                             ZStack {
                                 NavigationLink {
                                     StationPickerView(
-                                        cityName: city.name,
+                                        city: city,
                                         viewModel: viewModel
                                     )
                                 } label: {

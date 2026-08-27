@@ -8,17 +8,35 @@
 import Foundation
 import Combine
 
+@MainActor
 final class MainViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var departureCity: String = ""
     @Published var departureStation: String = ""
+    @Published var departureStationCode: String = ""
+    
     @Published var destinationCity: String = ""
     @Published var destinationStation: String = ""
+    @Published var destinationStationCode: String = ""
     
     @Published var searchText: String = ""
     
     @Published var showCityPicker = false
     @Published var isSelectingDeparture = true
+    
+    // Поля для работы с сетью и состояниями
+    @Published var cities: [CityModel] = []
+    @Published var routes: [CarrierRouteModel] = []
+    @Published var isLoading = false
+    @Published var isSearchingRoutes = false
+    @Published var errorMessage: String? = nil
+    
+    // MARK: - Dependencies
+    private let networkClient: NetworkClient
+    
+    init(networkClient: NetworkClient = NetworkClient()) {
+        self.networkClient = networkClient
+    }
     
     // MARK: - Computed Properties
     var departureTitle: String {
@@ -32,24 +50,60 @@ final class MainViewModel: ObservableObject {
     }
     
     var canSearch: Bool {
-        !departureCity.isEmpty && !destinationCity.isEmpty
+        !departureStationCode.isEmpty && !destinationStationCode.isEmpty
     }
     
     // MARK: - Filter Logic
-    var filteredCities: [City] {
+    var filteredCities: [CityModel] {
         if searchText.isEmpty {
-            return mockCities
+            return cities
         } else {
-            return mockCities.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            return cities.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
     }
     
-    func filteredStations(for cityName: String) -> [Station] {
-        let cityStations = mockStations.filter { $0.cityName == cityName }
+    func filteredStations(for city: CityModel) -> [StationModel] {
         if searchText.isEmpty {
-            return cityStations
+            return city.stations
         } else {
-            return cityStations.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            return city.stations.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
+    
+    // MARK: - Network API Calls
+    func loadData() async {
+        guard cities.isEmpty else { return }
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            let fetchedCities = try await networkClient.getRussianCitiesAndStations()
+            self.cities = fetchedCities
+            self.isLoading = false
+        } catch {
+            self.isLoading = false
+            self.errorMessage = "Ошибка загрузки: \(error.localizedDescription)"
+        }
+    }
+    
+    func fetchRoutes(date: String? = nil, allowTransfers: Bool = true) async {
+        guard canSearch else { return }
+        
+        isSearchingRoutes = true
+        errorMessage = nil
+        
+        do {
+            let fetchedRoutes = try await networkClient.searchSchedule(
+                from: departureStationCode,
+                to: destinationStationCode,
+                date: date,
+                transfers: allowTransfers
+            )
+            self.routes = fetchedRoutes
+            self.isSearchingRoutes = false
+        } catch {
+            self.isSearchingRoutes = false
+            self.errorMessage = "Ошибка поиска: \(error.localizedDescription)"
         }
     }
     
@@ -65,13 +119,15 @@ final class MainViewModel: ObservableObject {
         searchText = ""
     }
     
-    func selectCity(_ city: String, station: String = "") {
+    func selectStation(city: CityModel, station: StationModel) {
         if isSelectingDeparture {
-            departureCity = city
-            departureStation = station
+            departureCity = city.name
+            departureStation = station.name
+            departureStationCode = station.id
         } else {
-            destinationCity = city
-            destinationStation = station
+            destinationCity = city.name
+            destinationStation = station.name
+            destinationStationCode = station.id
         }
         closeCityPicker()
     }
@@ -79,9 +135,14 @@ final class MainViewModel: ObservableObject {
     func swapCities() {
         let tempCity = departureCity
         let tempStation = departureStation
+        let tempCode = departureStationCode
+        
         departureCity = destinationCity
         departureStation = destinationStation
+        departureStationCode = destinationStationCode
+        
         destinationCity = tempCity
         destinationStation = tempStation
+        destinationStationCode = tempCode
     }
 }

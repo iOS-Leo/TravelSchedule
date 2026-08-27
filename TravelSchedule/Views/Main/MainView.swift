@@ -111,6 +111,9 @@ struct MainView: View {
                     Spacer()
                 }
             }
+            .task {
+                await viewModel.loadData()
+            }
             .sheet(isPresented: $viewModel.showCityPicker) {
                 CityPickerView(viewModel: viewModel)
             }
