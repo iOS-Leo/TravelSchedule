@@ -12,16 +12,16 @@ struct CarriersListView: View {
     @StateObject private var viewModel: CarriersViewModel
     @State private var showFilters = false
     @Environment(\.dismiss) private var dismiss
-
+    
     init(viewModel: CarriersViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-
+    
     var body: some View {
         ZStack(alignment: .bottom) {
             Constants.Colors.mainBackground
                 .ignoresSafeArea()
-              
+            
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     Text("\(viewModel.departureTitle) → \(viewModel.destinationTitle)")
@@ -66,10 +66,11 @@ struct CarriersListView: View {
                         VStack(spacing: 8) {
                             ForEach(viewModel.filteredRoutes) { route in
                                 NavigationLink(destination: CarrierView(
-                                    carrierName: route.carrierName,
-                                    logoImageName: route.carrierLogoURL ?? "",
-                                    email: "",
-                                    phone: ""
+                                    viewModel: CarrierViewModel(
+                                        carrierCode: route.carrierCode,
+                                        carrierNameFallback: route.carrierName,
+                                        logoURLFallback: route.carrierLogoURL ?? ""
+                                    )
                                 )) {
                                     CarrierRowView(route: route)
                                 }
@@ -84,7 +85,7 @@ struct CarriersListView: View {
             .task {
                 await viewModel.fetchRoutes()
             }
-              
+            
             Button {
                 showFilters = true
             } label: {

@@ -5,14 +5,6 @@
 //  Created by Leo Gabuev on 27.08.2026.
 //
 
-
-//
-//  FlexibleDateTranscoder.swift
-//  TravelSchedule
-//
-//  Created by Leo Gabuev on 27.08.2026.
-//
-
 import Foundation
 import OpenAPIRuntime
 

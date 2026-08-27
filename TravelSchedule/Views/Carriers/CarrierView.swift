@@ -1,47 +1,47 @@
-//
-//  CarrierView.swift
-//  TravelSchedule
-//
-//  Created by Leo Gabuev on 21.08.2026.
-//
-
 import SwiftUI
 
 struct CarrierView: View {
-    @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.dismiss) private var dismiss
     
-    let carrierName: String
-    let logoImageName: String
-    let email: String
-    let phone: String
+    @Environment(\.dismiss) private var dismiss
+    @StateObject private var viewModel: CarrierViewModel
+    
+    init(viewModel: CarrierViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
+    
+    // MARK: - Logo URL
     
     private var imageURL: URL? {
-        guard !logoImageName.isEmpty else { return nil }
+        let logo = viewModel.logoURL
+        guard !logo.isEmpty else { return nil }
         
-        if logoImageName.hasPrefix("http://") || logoImageName.hasPrefix("https://") {
-            return URL(string: logoImageName)
-        }
-        if logoImageName.hasPrefix("/") {
-            return URL(string: "https://yastatic.net\(logoImageName)")
+        if logo.hasPrefix("http://") || logo.hasPrefix("https://") {
+            return URL(string: logo)
         }
         
-        return URL(string: logoImageName)
+        if logo.hasPrefix("/") {
+            return URL(string: "https://yastatic.net\(logo)")
+        }
+        
+        return URL(string: logo)
     }
+    
+    // MARK: - Body
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Spacer().frame(height: 16)
                 
-                // MARK: - Асинхронная загрузка логотипа
+                // MARK: - Logo
+                
                 if let url = imageURL {
                     AsyncImage(url: url) { phase in
                         switch phase {
                         case .empty:
                             ProgressView()
-                                .frame(height: 104)
                                 .frame(maxWidth: .infinity)
+                                .frame(height: 104)
                         case .success(let image):
                             image
                                 .resizable()
@@ -49,35 +49,67 @@ struct CarrierView: View {
                                 .cornerRadius(24)
                                 .frame(height: 104)
                                 .frame(maxWidth: .infinity)
-                        case .failure(let error):
-                            let _ = print("❌ [CarrierView] Ошибка загрузки картинки: \(error)")
+                        case .failure:
                             placeholderLogo
                         @unknown default:
                             placeholderLogo
                         }
                     }
-                } else if !logoImageName.isEmpty, UIImage(named: logoImageName) != nil {
-                    Image(logoImageName)
-                        .resizable()
-                        .scaledToFit()
-                        .cornerRadius(24)
-                        .frame(height: 104)
-                        .frame(maxWidth: .infinity)
                 } else {
                     placeholderLogo
                 }
                 
                 Spacer().frame(height: 16)
                 
-                Text(carrierName)
+                // MARK: - Carrier name
+                
+                Text(viewModel.carrierName)
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
+                    .foregroundStyle(.primary)
                 
                 Spacer().frame(height: 24)
                 
-                VStack(alignment: .leading, spacing: 24) {
-                    ContactInfoRow(title: "E-mail", value: email.isEmpty ? "Не указан" : email)
-                    ContactInfoRow(title: "Телефон", value: phone.isEmpty ? "Не указан" : phone)
+                // MARK: - Loading
+                
+                if viewModel.isLoading {
+                    ProgressView("Загрузка информации...")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 20)
+                } else {
+                    // MARK: - Email
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("E-mail")
+                            .font(.system(size: 15, weight: .regular))
+                            .foregroundStyle(.primary)
+                        
+                        Text(viewModel.email.isEmpty ? "Информация отсутствует" : viewModel.email)
+                            .font(.system(size: 17, weight: .medium))
+                            .foregroundStyle(viewModel.email.isEmpty ? .gray : .blue)
+                    }
+                    
+                    Spacer().frame(height: 24)
+                    
+                    // MARK: - Phone
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Телефон")
+                            .font(.system(size: 15, weight: .regular))
+                            .foregroundStyle(.primary)
+                        
+                        Text(viewModel.phone.isEmpty ? "Информация отсутствует" : viewModel.phone)
+                            .font(.system(size: 17, weight: .medium))
+                            .foregroundStyle(viewModel.phone.isEmpty ? .gray : .blue)
+                    }
+                }
+                
+                // MARK: - Error
+                
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .font(.system(size: 14))
+                        .foregroundStyle(.red)
+                        .padding(.top, 16)
                 }
                 
                 Spacer()
@@ -94,41 +126,28 @@ struct CarrierView: View {
                 } label: {
                     Image(systemName: Constants.Icons.back)
                         .font(Constants.Fonts.backButtonFont)
-                        .foregroundColor(.primary)
+                        .foregroundStyle(.primary)
                 }
             }
         }
-        .background(colorScheme == .dark ? Color.black : Color.white)
+        .task {
+            await viewModel.fetchCarrierInfo()
+        }
     }
+    
+    // MARK: - Placeholder
     
     private var placeholderLogo: some View {
         RoundedRectangle(cornerRadius: 24)
             .fill(Color.gray.opacity(0.2))
             .frame(height: 104)
             .frame(maxWidth: .infinity)
-            .overlay(
+            .overlay {
                 Image(systemName: "building.2.fill")
                     .resizable()
                     .scaledToFit()
                     .frame(height: 40)
-                    .foregroundColor(.gray)
-            )
-    }
-}
-
-private struct ContactInfoRow: View {
-    let title: String
-    let value: String
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.system(size: 15, weight: .regular))
-                .foregroundStyle(.primary)
-            
-            Text(value)
-                .font(.system(size: 17, weight: .medium))
-                .foregroundStyle(.blue)
-        }
+                    .foregroundStyle(.gray)
+            }
     }
 }
