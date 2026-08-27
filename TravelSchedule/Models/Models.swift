@@ -8,13 +8,6 @@
 import Foundation
 import SwiftUI
 
-// MARK: - Carrier Model
-struct CarrierItem: Identifiable {
-    let id = UUID()
-    let imageResource: ImageResource
-}
-
-// MARK: - Filter Models
 enum DepartureTime: CaseIterable, Identifiable {
     case morning
     case afternoon

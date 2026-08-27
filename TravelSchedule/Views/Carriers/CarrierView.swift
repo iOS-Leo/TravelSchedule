@@ -1,79 +1,153 @@
-//
-//  CarrierView.swift
-//  TravelSchedule
-//
-//  Created by Leo Gabuev on 21.08.2026.
-//
-
 import SwiftUI
 
 struct CarrierView: View {
-    @Environment(\.colorScheme) private var colorScheme
     
-    let carrierName: String
-    let logoImageName: String
-    let email: String
-    let phone: String
+    @Environment(\.dismiss) private var dismiss
+    @StateObject private var viewModel: CarrierViewModel
+    
+    init(viewModel: CarrierViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
+    
+    // MARK: - Logo URL
+    
+    private var imageURL: URL? {
+        let logo = viewModel.logoURL
+        guard !logo.isEmpty else { return nil }
+        
+        if logo.hasPrefix("http://") || logo.hasPrefix("https://") {
+            return URL(string: logo)
+        }
+        
+        if logo.hasPrefix("/") {
+            return URL(string: "https://yastatic.net\(logo)")
+        }
+        
+        return URL(string: logo)
+    }
+    
+    // MARK: - Body
     
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    Spacer().frame(height: 16)
-                    
-                    Image(.logoRZD)
-                        .resizable()
-                        .scaledToFit()
-                        .cornerRadius(24)
-                        .frame(height: 104)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                Spacer().frame(height: 16)
+                
+                // MARK: - Logo
+                
+                if let url = imageURL {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 104)
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .cornerRadius(24)
+                                .frame(height: 104)
+                                .frame(maxWidth: .infinity)
+                        case .failure:
+                            placeholderLogo
+                        @unknown default:
+                            placeholderLogo
+                        }
+                    }
+                } else {
+                    placeholderLogo
+                }
+                
+                Spacer().frame(height: 16)
+                
+                // MARK: - Carrier name
+                
+                Text(viewModel.carrierName)
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundStyle(.primary)
+                
+                Spacer().frame(height: 24)
+                
+                // MARK: - Loading
+                
+                if viewModel.isLoading {
+                    ProgressView("Загрузка информации...")
                         .frame(maxWidth: .infinity)
+                        .padding(.vertical, 20)
+                } else {
+                    // MARK: - Email
                     
-                    Spacer().frame(height: 16)
-                    
-                    Text(carrierName)
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundStyle(colorScheme == .dark ? .white : .black)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("E-mail")
+                            .font(.system(size: 15, weight: .regular))
+                            .foregroundStyle(.primary)
+                        
+                        Text(viewModel.email.isEmpty ? "Информация отсутствует" : viewModel.email)
+                            .font(.system(size: 17, weight: .medium))
+                            .foregroundStyle(viewModel.email.isEmpty ? .gray : .blue)
+                    }
                     
                     Spacer().frame(height: 24)
                     
-                    VStack(alignment: .leading, spacing: 24) {
-                        ContactInfoRow(title: "E-mail", value: email)
-                        ContactInfoRow(title: "Телефон", value: phone)
-                    }
+                    // MARK: - Phone
                     
-                    Spacer()
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Телефон")
+                            .font(.system(size: 15, weight: .regular))
+                            .foregroundStyle(.primary)
+                        
+                        Text(viewModel.phone.isEmpty ? "Информация отсутствует" : viewModel.phone)
+                            .font(.system(size: 17, weight: .medium))
+                            .foregroundStyle(viewModel.phone.isEmpty ? .gray : .blue)
+                    }
                 }
-                .padding(.horizontal, 16)
+                
+                // MARK: - Error
+                
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .font(.system(size: 14))
+                        .foregroundStyle(.red)
+                        .padding(.top, 16)
+                }
+                
+                Spacer()
             }
-            .navigationTitle("Информация о перевозчике")
-            .navigationBarTitleDisplayMode(.inline)
-            .background(colorScheme == .dark ? Color.black : Color.white)
+            .padding(.horizontal, 16)
+        }
+        .navigationTitle("Информация о перевозчике")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: Constants.Icons.back)
+                        .font(Constants.Fonts.backButtonFont)
+                        .foregroundStyle(.primary)
+                }
+            }
+        }
+        .task {
+            await viewModel.fetchCarrierInfo()
         }
     }
-}
-
-private struct ContactInfoRow: View {
-    let title: String
-    let value: String
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.system(size: 15, weight: .regular))
-                .foregroundStyle(.primary)
-            
-            Text(value)
-                .font(.system(size: 17, weight: .medium))
-                .foregroundStyle(.blue)
-        }
+    // MARK: - Placeholder
+    
+    private var placeholderLogo: some View {
+        RoundedRectangle(cornerRadius: 24)
+            .fill(Color.gray.opacity(0.2))
+            .frame(height: 104)
+            .frame(maxWidth: .infinity)
+            .overlay {
+                Image(systemName: "building.2.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 40)
+                    .foregroundStyle(.gray)
+            }
     }
-}
-
-#Preview {
-    CarrierView(
-        carrierName: "ОАО «РЖД»",
-        logoImageName: "logoRZD",
-        email: "i.lozgkina@yandex.ru",
-        phone: "+7 (904) 329-27-71"
-    )
 }

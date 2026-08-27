@@ -13,6 +13,15 @@ struct StoryItem: Identifiable {
     let title: String
     let imageName: String
     var isViewed: Bool = false
+    
+    var parsedTitle: String {
+        title.components(separatedBy: "\n").first ?? ""
+    }
+    
+    var parsedDescription: String? {
+        let parts = title.components(separatedBy: "\n")
+        return parts.count > 1 ? parts[1] : nil
+    }
 }
 
 let mockStories: [StoryItem] = [
