@@ -9,27 +9,51 @@ import SwiftUI
 
 struct CarriersListView: View {
     
-    @ObservedObject var viewModel: CarriersViewModel
-    
+    @StateObject private var viewModel: CarriersViewModel
     @State private var showFilters = false
     @Environment(\.dismiss) private var dismiss
 
+    init(viewModel: CarriersViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
+
     var body: some View {
         ZStack(alignment: .bottom) {
-            // MARK: - Фон экрана
             Constants.Colors.mainBackground
                 .ignoresSafeArea()
-            
-            // MARK: - Контент
+              
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text("\(viewModel.departure) → \(viewModel.destination)")
+                    Text("\(viewModel.departureTitle) → \(viewModel.destinationTitle)")
                         .font(.system(size: Constants.Layout.mainTitleFontSize, weight: .bold))
                         .foregroundColor(.primary)
                         .padding(.horizontal, Constants.Layout.horizontalPadding)
                         .padding(.vertical, Constants.Layout.horizontalPadding)
                     
-                    if viewModel.filteredCarriers.isEmpty {
+                    // MARK: - Состояния экрана
+                    if viewModel.isLoading {
+                        VStack {
+                            Spacer().frame(height: 60)
+                            ProgressView("Загрузка расписания...")
+                                .frame(maxWidth: .infinity)
+                        }
+                    } else if let error = viewModel.errorMessage {
+                        VStack(spacing: 12) {
+                            Spacer().frame(height: 40)
+                            Text(error)
+                                .font(.subheadline)
+                                .foregroundColor(.red)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+                            
+                            Button("Попробовать снова") {
+                                Task {
+                                    await viewModel.fetchRoutes()
+                                }
+                            }
+                            .font(.subheadline.bold())
+                        }
+                    } else if viewModel.filteredRoutes.isEmpty {
                         VStack {
                             Spacer().frame(height: Constants.Layout.emptyStateSpacerHeight)
                             Text(Constants.Strings.noCarriersFound)
@@ -40,19 +64,16 @@ struct CarriersListView: View {
                         }
                     } else {
                         VStack(spacing: 8) {
-                            ForEach(viewModel.filteredCarriers) { carrier in
+                            ForEach(viewModel.filteredRoutes) { route in
                                 NavigationLink(destination: CarrierView(
-                                    carrierName: carrier.name,
-                                    logoImageName: carrier.logo,
-                                    email: carrier.email,
-                                    phone: carrier.phone
+                                    carrierName: route.carrierName,
+                                    logoImageName: route.carrierLogoURL ?? "",
+                                    email: "",
+                                    phone: ""
                                 )) {
-                                    Image(carrier.logo)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(maxWidth: .infinity)
-                                        .contentShape(Rectangle())
+                                    CarrierRowView(route: route)
                                 }
+                                .buttonStyle(PlainButtonStyle())
                             }
                         }
                         .padding(.horizontal, Constants.Layout.horizontalPadding)
@@ -60,8 +81,10 @@ struct CarriersListView: View {
                     }
                 }
             }
-            
-            // MARK: - Кнопка "Уточнить время"
+            .task {
+                await viewModel.fetchRoutes()
+            }
+              
             Button {
                 showFilters = true
             } label: {
@@ -93,16 +116,5 @@ struct CarriersListView: View {
                 viewModel.appliedFilters = updatedFilters
             }
         }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        CarriersListView(
-            viewModel: CarriersViewModel(
-                departure: "Москва (Ярославский вокзал)",
-                destination: "Санкт-Петербург (Балтийский вокзал)"
-            )
-        )
     }
 }

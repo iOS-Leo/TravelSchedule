@@ -10,7 +10,7 @@ import OpenAPIRuntime
 import OpenAPIURLSession
 
 enum APIConstants {
-    static let apiKey = "//"
+    static let apiKey = "da376864-7e73-417e-946b-aee48bb51b36"
     static let baseURL = "https://api.rasp.yandex.net"
 }
 
@@ -38,6 +38,19 @@ struct CarrierRouteModel: Sendable, Identifiable {
     let duration: String
     let date: String
     let carrierCode: String
+    
+    var departureHour: Int {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        if let date = formatter.date(from: departureTime) {
+            return Calendar.current.component(.hour, from: date)
+        }
+        let components = departureTime.components(separatedBy: ":")
+        if let first = components.first, let hour = Int(first) {
+            return hour
+        }
+        return 0
+    }
 }
 
 enum NetworkError: Error {
@@ -55,6 +68,9 @@ actor NetworkClient {
     init(
         client: Client = Client(
             serverURL: try! URL(string: APIConstants.baseURL)!,
+            configuration: Configuration(
+                dateTranscoder: FlexibleDateTranscoder()
+            ),
             transport: URLSessionTransport()
         ),
         apiKey: String = APIConstants.apiKey

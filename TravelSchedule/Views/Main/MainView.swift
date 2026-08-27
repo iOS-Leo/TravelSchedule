@@ -93,8 +93,10 @@ struct MainView: View {
                         NavigationLink {
                             CarriersListView(
                                 viewModel: CarriersViewModel(
-                                    departure: viewModel.departureTitle,
-                                    destination: viewModel.destinationTitle
+                                    departureTitle: viewModel.departureTitle,
+                                    destinationTitle: viewModel.destinationTitle,
+                                    departureCode: viewModel.departureStationCode,
+                                    destinationCode: viewModel.destinationStationCode
                                 )
                             )
                         } label: {
