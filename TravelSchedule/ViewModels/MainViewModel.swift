@@ -24,7 +24,6 @@ final class MainViewModel: ObservableObject {
     @Published var showCityPicker = false
     @Published var isSelectingDeparture = true
     
-    // Поля для работы с сетью и состояниями
     @Published var cities: [CityModel] = []
     @Published var routes: [CarrierRouteModel] = []
     @Published var isLoading = false
