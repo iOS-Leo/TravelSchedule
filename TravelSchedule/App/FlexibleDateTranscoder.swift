@@ -58,8 +58,20 @@ struct FlexibleDateTranscoder: DateTranscoder {
             return date
         }
         
-        if let date = timeOnlyFormatter.date(from: dateString) {
-            return date
+        if let timeOnlyDate = timeOnlyFormatter.date(from: dateString) {
+            let calendar = Calendar.current
+            let now = Date()
+            
+            let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: timeOnlyDate)
+            
+            var todayComponents = calendar.dateComponents([.year, .month, .day], from: now)
+            todayComponents.hour = timeComponents.hour
+            todayComponents.minute = timeComponents.minute
+            todayComponents.second = timeComponents.second
+            
+            if let fullDate = calendar.date(from: todayComponents) {
+                return fullDate
+            }
         }
         
         throw DecodingError.dataCorrupted(

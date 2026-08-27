@@ -42,10 +42,14 @@ final class CarriersViewModel: ObservableObject {
         print("   • Destination: \(destinationTitle) (code: '\(destinationCode)')")
         
         do {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            let todayDateString = formatter.string(from: Date())
+            
             let fetchedRoutes = try await networkClient.searchSchedule(
                 from: departureCode,
                 to: destinationCode,
-                date: nil,
+                date: todayDateString,
                 transfers: true
             )
             
