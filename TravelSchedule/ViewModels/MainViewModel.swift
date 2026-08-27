@@ -37,15 +37,31 @@ final class MainViewModel: ObservableObject {
         self.networkClient = networkClient
     }
     
+    // MARK: - Helper Formatting
+    private func formatTitle(city: String, station: String) -> String {
+        guard !city.isEmpty else { return "" }
+        guard !station.isEmpty else { return city }
+        
+        if station.contains("(\(city)") || station.hasPrefix(city) {
+            return station
+        }
+        
+        if city == station {
+            return city
+        }
+        
+        return "\(city) (\(station))"
+    }
+    
     // MARK: - Computed Properties
     var departureTitle: String {
         guard !departureCity.isEmpty else { return Constants.Strings.departurePlaceholder }
-        return departureStation.isEmpty ? departureCity : "\(departureCity) (\(departureStation))"
+        return formatTitle(city: departureCity, station: departureStation)
     }
     
     var destinationTitle: String {
         guard !destinationCity.isEmpty else { return Constants.Strings.destinationPlaceholder }
-        return destinationStation.isEmpty ? destinationCity : "\(destinationCity) (\(destinationStation))"
+        return formatTitle(city: destinationCity, station: destinationStation)
     }
     
     var canSearch: Bool {
